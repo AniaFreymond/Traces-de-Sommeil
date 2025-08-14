@@ -25,7 +25,7 @@ export default function GlowBackground({ base, avgQuality, theme }: Props){
 
     function step(){
       t += speed;
-      const hue = (t*360) % 360; // slow hue drift
+      const hue = (t*300) % 300; // slow hue drift
       el.style.setProperty('--h', String(hue));
       el.style.setProperty('--spread', String(spread));
       raf = requestAnimationFrame(step);
