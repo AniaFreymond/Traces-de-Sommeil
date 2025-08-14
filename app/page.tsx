@@ -9,7 +9,19 @@ import AuthPanel from '../components/AuthPanel';
 export default function Page(){
   const [session, setSession] = useState<any>(null);
   const [avgQuality, setAvgQuality] = useState<number | null>(null);
-  const [theme, setTheme] = useState<string>(()=> document.documentElement.dataset.theme || 'light');
+  const [theme, setTheme] = useState<'light'|'dark'>('light');
+
+  // Read initial theme from document (browser only)
+  useEffect(() => {
+    try {
+      const attr = (document?.documentElement?.dataset?.theme as 'light'|'dark'|undefined);
+      if (attr) {
+        setTheme(attr);
+      } else if (typeof window !== 'undefined' && window.matchMedia) {
+        setTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      }
+    } catch {}
+  }, []);
 
   useEffect(()=>{
     supabase.auth.getSession().then(({ data })=> setSession(data.session));
@@ -34,8 +46,10 @@ export default function Page(){
   const palette = useMemo(()=>({ a:'#cce7ff', b:'#ffd6e8', c:'#d9ffe5' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.dataset.theme = next;
-    localStorage.setItem('theme', next);
+    if (typeof document !== 'undefined') {
+      document.documentElement.dataset.theme = next;
+    }
+    try { localStorage.setItem('theme', next); } catch {}
     setTheme(next);
   };
 
