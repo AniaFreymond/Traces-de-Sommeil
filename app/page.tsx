@@ -10,8 +10,8 @@ export default function Page(){
   const [session, setSession] = useState<any>(null);
   const [avgQuality, setAvgQuality] = useState<number | null>(null);
   const [theme, setTheme] = useState<'light'|'dark'>('light');
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  // Read initial theme from document (browser only)
   useEffect(() => {
     try {
       const attr = (document?.documentElement?.dataset?.theme as 'light'|'dark'|undefined);
@@ -78,7 +78,8 @@ export default function Page(){
           <div className="grid">
             <section className="card">
               <h2>Log your sleep</h2>
-              <SleepForm onSaved={refreshAvg} />
+              <SleepForm onSaved={() => { refreshAvg(); setRefreshKey(k => k + 1); }} />
+<EntriesList refreshKey={refreshKey} />
             </section>
             <section className="card">
               <h2>Your entries</h2>
