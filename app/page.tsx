@@ -6,7 +6,6 @@ import SleepForm from '../components/SleepForm';
 import EntriesList from '../components/EntriesList';
 import AuthPanel from '../components/AuthPanel';
 
-
 export default function Page(){
   const [session, setSession] = useState<any>(null);
   const [avgQuality, setAvgQuality] = useState<number | null>(null);
