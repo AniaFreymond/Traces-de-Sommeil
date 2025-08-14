@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabaseClient';
 
 type Row = { id: string; entry_date: string; bedtime: string|null; waketime: string|null; duration_minutes: number|null; quality: number|null; notes: string|null };
 
-export default function EntriesList(){
+export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number }) {
   const [rows, setRows] = useState<Row[]|null>(null);
 
   async function load(){
@@ -16,7 +16,7 @@ export default function EntriesList(){
     if(error){ console.error(error); }
     setRows(data as any);
   }
-  useEffect(()=>{ load(); },[]);
+  useEffect(()=>{ load(); }, [refreshKey]);
 
   if(!rows) return <div className="muted">Loading…</div>;
   if(rows.length===0) return <div className="muted">No entries yet.</div>;
