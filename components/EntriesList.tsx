@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 
 type Row = { id: string; entry_date: string; bedtime: string|null; waketime: string|null; duration_minutes: number|null; quality: number|null; notes: string|null };
 
