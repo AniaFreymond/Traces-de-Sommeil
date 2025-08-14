@@ -34,7 +34,7 @@ export default function AuthPanel(){
   return (
     <div>
       <div className="rowflex" style={{gap:6, margin:'8px 0 14px'}}>
-        <button className={mode==='password'?'':'ghost'} onClick={()=>setMode('password')}>Email & Password</button>
+        <button className={mode==='password'?'':''} onClick={()=>setMode('password')}>Email & Password</button>
         <button className={mode==='magic'?'':'ghost'} onClick={()=>setMode('magic')}>Magic Link</button>
       </div>
 
