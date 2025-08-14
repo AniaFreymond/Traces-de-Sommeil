@@ -51,3 +51,44 @@ button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(
 
 /* Subtle grain overlay for depth */
 body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".035"/></svg>'); mix-blend-mode: soft-light; }
+
+/* Sleeker entries */
+.sleek-list{ display:grid; gap:12px; }
+.entry.sleek{
+  padding:14px 16px;
+  border-radius:14px;
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  border:1px solid color-mix(in oklab, var(--muted) 45%, transparent);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.entry.sleek:hover{ transform: translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.12); }
+
+.entry-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.entry-date{ font-weight:700; }
+.entry-actions{ display:flex; gap:6px; }
+
+.entry-meta{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin:8px 0 2px;
+}
+.entry-notes{ margin:8px 0 0; white-space:pre-wrap; }
+.stars{ letter-spacing:1px; }
+
+/* Icon buttons */
+.iconbtn{
+  appearance:none; border:0; cursor:pointer;
+  padding:6px 8px; border-radius:10px; line-height:1;
+  background: color-mix(in oklab, var(--muted) 30%, transparent);
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+.iconbtn:hover{ transform: translateY(-1px); }
+.iconbtn.danger{ background: color-mix(in oklab, #ffb3c1 35%, transparent); }
+.iconbtn:disabled{ opacity:.5; cursor:default; transform:none; }
+
+/* Modal */
+.modal{ position:fixed; inset:0; background: color-mix(in oklab, #000 25%, transparent); display:grid; place-items:center; z-index:50; padding:16px; }
+.modal-box{
+  width:min(680px, 92vw); background: color-mix(in oklab, var(--surface) 98%, transparent);
+  border:1px solid color-mix(in oklab, var(--muted) 50%, transparent);
+  border-radius:16px; box-shadow: var(--shadow); padding:16px;
+}
