@@ -2,6 +2,10 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (typeof window !== 'undefined' ? window.location.origin : '');
+
 export default function AuthPanel(){
   const [mode, setMode] = useState<'password'|'magic'>('password');
   const [email, setEmail] = useState('');
@@ -12,22 +16,34 @@ export default function AuthPanel(){
   async function signUp(e: React.FormEvent){
     e.preventDefault(); setMessage('Creating account…');
     if(password !== confirm){ setMessage('Passwords do not match.'); return; }
-    const { error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: SITE_URL || undefined } // ← stable
+    });
     setMessage(error ? 'Error: '+error.message : 'Check your email to confirm your account.');
   }
+
   async function signIn(e: React.FormEvent){
     e.preventDefault(); setMessage('Signing in…');
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setMessage(error ? 'Error: '+error.message : 'Signed in!');
   }
+
   async function forgotPassword(){
     setMessage('Sending reset email…');
-    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/update-password' });
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: SITE_URL ? `${SITE_URL}/update-password` : undefined // ← stable
+    });
     setMessage(error ? 'Error: '+error.message : 'Check your email for the reset link.');
   }
+
   async function sendMagicLink(e: React.FormEvent){
     e.preventDefault(); setMessage('Sending magic link…');
-    const { error } = await supabase.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: SITE_URL || undefined } // ← stable
+    });
     setMessage(error ? 'Error: '+error.message : 'Check your email for the sign-in link.');
   }
 
