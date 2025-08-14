@@ -10,13 +10,22 @@ type Row = {
   duration_minutes: number|null;
   quality: number|null;
   notes: string|null;
-  user_id?: string;
 };
+
+type ActionStyle = 'icons' | 'text';
 
 export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number }) {
   const [rows, setRows] = useState<Row[]|null>(null);
   const [editing, setEditing] = useState<Row | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [actionStyle, setActionStyle] = useState<ActionStyle>(() => {
+    if (typeof localStorage === 'undefined') return 'icons';
+    return (localStorage.getItem('entries_action_style') as ActionStyle) || 'icons';
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('entries_action_style', actionStyle); } catch {}
+  }, [actionStyle]);
 
   async function load(){
     const { data: { user } } = await supabase.auth.getUser();
@@ -27,15 +36,13 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
       .eq('user_id', user.id)
       .order('entry_date', { ascending: false })
       .limit(60);
-    if (error) { console.error(error); }
+    if (error) console.error(error);
     setRows(data as Row[]);
   }
-
   useEffect(()=>{ load(); }, [refreshKey]);
 
   async function onDelete(id: string){
-    const ok = window.confirm('Delete this entry?');
-    if (!ok) return;
+    if (!confirm('Delete this entry?')) return;
     setLoadingId(id);
     const { error } = await supabase.from('sleep_entries').delete().eq('id', id);
     setLoadingId(null);
@@ -60,10 +67,7 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
     const { error } = await supabase.from('sleep_entries').update(patch).eq('id', editing.id);
     setLoadingId(null);
     if (error) return alert(error.message);
-    setRows(prev => prev
-      ? prev.map(r => r.id === editing.id ? { ...r, ...patch } as Row : r)
-      : prev
-    );
+    setRows(prev => prev ? prev.map(r => r.id === editing.id ? { ...r, ...patch } as Row : r) : prev);
     closeEdit();
   }
 
@@ -72,16 +76,54 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
 
   return (
     <>
+      {/* Small control to switch Icons/Text */}
+      <div className="actions-style">
+        <span className="muted" style={{fontSize:13}}>Actions:</span>
+        <div className="segmented">
+          <button
+            className={`seg ${actionStyle==='icons'?'on':''}`}
+            onClick={()=>setActionStyle('icons')}
+            type="button"
+          >Icons</button>
+          <button
+            className={`seg ${actionStyle==='text'?'on':''}`}
+            onClick={()=>setActionStyle('text')}
+            type="button"
+          >Text</button>
+        </div>
+      </div>
+
       <div className="sleek-list">
         {rows.map(r=> (
           <article key={r.id} className="entry sleek">
             <div className="entry-head">
               <div className="entry-date">{fmtDate(r.entry_date)}</div>
               <div className="entry-actions">
-                <button className="iconbtn" onClick={()=>openEdit(r)} aria-label="Edit">✏️</button>
-                <button className="iconbtn danger" onClick={()=>onDelete(r.id)} disabled={loadingId===r.id} aria-label="Delete">
-                  {loadingId===r.id ? '…' : '🗑️'}
-                </button>
+                {actionStyle === 'icons' ? (
+                  <>
+                    <button className="iconbtn" onClick={()=>openEdit(r)} aria-label="Edit">
+                      <span aria-hidden>✏️</span><span className="sr-only">Edit</span>
+                    </button>
+                    <button
+                      className="iconbtn danger"
+                      onClick={()=>onDelete(r.id)}
+                      disabled={loadingId===r.id}
+                      aria-label="Delete"
+                    >
+                      <span aria-hidden>{loadingId===r.id ? '…' : '🗑️'}</span>
+                      <span className="sr-only">Delete</span>
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button className="textbtn" onClick={()=>openEdit(r)}>Edit</button>
+                    <button
+                      className="textbtn danger"
+                      onClick={()=>onDelete(r.id)}
+                      disabled={loadingId===r.id}
+                    >{loadingId===r.id ? 'Deleting…' : 'Delete'}</button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -109,6 +151,7 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
   );
 }
 
+/* ---------- Edit Modal ---------- */
 
 function EditModal({ row, onClose, onSave }:{
   row: Row; onClose: ()=>void; onSave: (u: Partial<Row>)=>void;
@@ -158,7 +201,6 @@ function EditModal({ row, onClose, onSave }:{
     </div>
   );
 }
-
 
 function fmtDate(iso: string){
   const d = new Date(iso + 'T00:00:00');
