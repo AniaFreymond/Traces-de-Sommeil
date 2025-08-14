@@ -1,0 +1,21 @@
+export const metadata = { title: 'Sleep Journal', description: 'Soothing pastel sleep journal with Supabase sync' };
+
+// Tiny script to set the theme early (prevents flash)
+const ThemeScript = () => (
+  <script
+    dangerouslySetInnerHTML={{
+      __html: `(()=>{try{const k='theme';const s=localStorage.getItem(k);const m=s|| (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');document.documentElement.dataset.theme=m;}catch{}})();`
+    }}
+  />
+);
+
+export default function RootLayout({ children }: { children: React.ReactNode }){
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head><ThemeScript /></head>
+      <body>
+        {children}
+      </body>
+    </html>
+  );
+}
