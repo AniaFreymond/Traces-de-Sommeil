@@ -5,7 +5,6 @@ import GlowBackground from '@/components/GlowBackground';
 import SleepForm from '@/components/SleepForm';
 import EntriesList from '@/components/EntriesList';
 import AuthPanel from '@/components/AuthPanel';
-import '@/styles/globals.css';
 
 export default function Page(){
   const [session, setSession] = useState<any>(null);

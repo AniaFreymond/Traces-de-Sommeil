@@ -1,3 +1,4 @@
+import '@/styles/globals.css';
 export const metadata = { title: 'Sleep Journal', description: 'Soothing pastel sleep journal with Supabase sync' };
 
 // Tiny script to set the theme early (prevents flash)
