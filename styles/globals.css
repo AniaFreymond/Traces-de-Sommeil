@@ -39,15 +39,58 @@ button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(
 .right{ margin-left:auto; }
 .field{ flex:1 1 180px; }
 
-/* Dynamic glow backdrop */
-.glow{ position:fixed; inset:-22vmax; z-index:-1; filter: blur(36px) saturate(120%); pointer-events:none; }
-.glow::before, .glow::after{ content:""; position:absolute; border-radius:50%; width:60vmax; height:60vmax; }
-.glow::before{ left:-10vmax; top:0; background: radial-gradient(circle at 30% 30%, oklch(85% .12 var(--h,0)), transparent 60%), radial-gradient(circle at 70% 70%, oklch(85% .09 calc(var(--h,0) + 40)), transparent 60%); transform: translate(calc(-4vmax*var(--spread,0.5)), -2vmax); animation: float1 34s ease-in-out infinite alternate; }
-.glow::after{ right:-15vmax; top:20vmax; background: radial-gradient(circle at 30% 30%, oklch(88% .09 calc(var(--h,0) + 120)), transparent 60%), radial-gradient(circle at 70% 70%, oklch(90% .08 calc(var(--h,0) + 200)), transparent 60%); transform: translate(calc(4vmax*var(--spread,0.5)), 2vmax); animation: float2 38s ease-in-out infinite alternate; }
-@keyframes float1{ from{ transform: translate(calc(-4vmax*var(--spread,0.5)), -2vmax) scale(1);} to{ transform: translate(calc(4vmax*var(--spread,0.5)), 2vmax) scale(1.04);} }
-@keyframes float2{ from{ transform: translate(calc(3vmax*var(--spread,0.5)), 1vmax) scale(1);} to{ transform: translate(calc(-3vmax*var(--spread,0.5)), -1vmax) scale(1.06);} }
-.glow-dark{ mix-blend-mode: screen; opacity:.6; }
-.glow-light{ mix-blend-mode: multiply; opacity:.7; }
+/* Dynamic glow backdrop — full-viewport, refined */
+.glow.glow-full{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Slightly stronger blur for buttery gradients, modest saturation */
+  filter: blur(64px) saturate(118%);
+}
+
+/* Two overlapping, oversized blobs to ensure full coverage on any screen ratio */
+.glow.glow-full::before,
+.glow.glow-full::after{
+  content: "";
+  position: absolute;
+  /* overscan so there are no edges on ultra-wide/tall screens */
+  left: -25vmax; right: -25vmax; top: -25vmax; bottom: -25vmax;
+  border-radius: 50%;
+}
+
+/* Primary lobe */
+.glow.glow-full::before{
+  background:
+    radial-gradient(40vmax 40vmax at 25% 35%, oklch(88% .10 var(--h,0)) 0%, transparent 70%),
+    radial-gradient(36vmax 36vmax at 70% 60%, oklch(86% .09 calc(var(--h,0) + 60)) 0%, transparent 72%);
+  transform: translate(calc(-6vmax*var(--spread,1)), -2vmax);
+  animation: float1 24s ease-in-out infinite alternate;
+}
+
+/* Secondary lobe */
+.glow.glow-full::after{
+  background:
+    radial-gradient(42vmax 42vmax at 30% 70%, oklch(90% .09 calc(var(--h,0) + 140)) 0%, transparent 72%),
+    radial-gradient(38vmax 38vmax at 75% 30%, oklch(90% .08 calc(var(--h,0) + 220)) 0%, transparent 70%);
+  transform: translate(calc(6vmax*var(--spread,1)), 2vmax);
+  animation: float2 28s ease-in-out infinite alternate;
+}
+
+/* Slightly quicker orbital motion to match the faster hue drift */
+@keyframes float1{
+  from{ transform: translate(calc(-6vmax*var(--spread,1)), -2vmax) scale(1); }
+  to  { transform: translate(calc( 6vmax*var(--spread,1)),  2vmax) scale(1.05); }
+}
+@keyframes float2{
+  from{ transform: translate(calc( 5vmax*var(--spread,1)),  1vmax) scale(1); }
+  to  { transform: translate(calc(-5vmax*var(--spread,1)), -1vmax) scale(1.06); }
+}
+
+/* Blend modes by theme keep things soft and legible */
+.glow-dark{  mix-blend-mode: screen;   opacity: .65; }
+.glow-light{ mix-blend-mode: multiply; opacity: .75; }
+
 
 /* Subtle grain overlay for depth */
 body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".035"/></svg>'); mix-blend-mode: soft-light; }
