@@ -2,39 +2,38 @@
 import { useEffect, useRef } from 'react';
 
 type Props = {
-  base: { a: string; b: string; c: string };
-  avgQuality: number | null; // 1..5
+  base?: { a: string; b: string; c: string };  
+  avgQuality?: number | null;                   
   theme: 'light' | 'dark' | string;
 };
 
-// A therapeutic, dynamic glow that:
-//  • softly animates with rAF (hue drift)
-//  • adapts intensity to avg sleep quality (lower quality => calmer, slower)
-//  • respects theme (switches blend modes)
-export default function GlowBackground({ base, avgQuality, theme }: Props){
+export default function GlowBackground({ theme }: Props){
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(()=>{
     const el = ref.current!;
-    let raf = 0; let t = 0;
+    let raf = 0;
+    let t = 0;
 
-    // Speed and spread scale with average quality (defaults calm if null)
-    const q = Math.min(5, Math.max(1, avgQuality ?? 2.8));
-    const speed = 0.0008 + (q-1)*0.00025; // faster if quality higher
-    const spread = 0.5 + (q-1)*0.07;      // larger subtle movement
+    const speed = 0.006;   
+    const spread = 1.0;       
 
-    function step(){
+    const step = () => {
       t += speed;
-      const hue = (t*300) % 300; // slow hue drift
+      const hue = (t * 360) % 360; // continuous hue rotation
       el.style.setProperty('--h', String(hue));
       el.style.setProperty('--spread', String(spread));
       raf = requestAnimationFrame(step);
-    }
+    };
     raf = requestAnimationFrame(step);
-    return ()=> cancelAnimationFrame(raf);
-  }, [avgQuality]);
+    return () => cancelAnimationFrame(raf);
+  }, [theme]); // restart animation styles if theme changes
 
   return (
-    <div ref={ref} className={`glow ${theme==='dark'?'glow-dark':'glow-light'}`} aria-hidden />
+    <div
+      ref={ref}
+      className={`glow glow-full ${theme === 'dark' ? 'glow-dark' : 'glow-light'}`}
+      aria-hidden
+    />
   );
 }
