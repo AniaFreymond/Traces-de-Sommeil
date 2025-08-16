@@ -43,7 +43,8 @@ export default function Page(){
   }
   useEffect(()=>{ refreshAvg(); }, [session]);
 
-  const palette = useMemo(()=>({ a:'#cce7ff', b:'#ffd6e8', c:'#d9ffe5' }),[]);
+  // pastel palette for the dynamic glow
+  const palette = useMemo(()=>({ a:'#cfe8ff', b:'#ffe1e8', c:'#e3f7e8' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
     if (typeof document !== 'undefined') {
@@ -79,14 +80,13 @@ export default function Page(){
             <section className="card">
               <h2>Log your sleep</h2>
               <SleepForm onSaved={() => { refreshAvg(); setRefreshKey(k => k + 1); }} />
-<EntriesList refreshKey={refreshKey} />
             </section>
             <section className="card">
               <h2>Your entries</h2>
-              <EntriesList />
-            </section>
-          </div>
-        ) : (
+              <EntriesList refreshKey={refreshKey} />
+              </section>
+            </div>
+          ) : (
           <section className="card">
             <h2>Welcome 👋</h2>
             <p className="muted">Sign in with <b>email & password</b> or use a <b>magic link</b>. No servers required.</p>
