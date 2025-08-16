@@ -146,6 +146,39 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-
 .entry-notes{ margin:8px 0 0; white-space:pre-wrap; }
 .stars{ letter-spacing:1px; }
 
+/* interactive star rating */
+.star-rating{ display:inline-flex; gap:4px; }
+.star-rating button{
+  appearance:none; border:0; background:none; cursor:pointer;
+  font-size:22px; line-height:1; padding:2px;
+  color: color-mix(in oklab, var(--text) 40%, transparent);
+  transition: color .2s ease, text-shadow .2s ease;
+}
+.star-rating button.on{ color:var(--accent1); text-shadow:0 0 8px var(--accent1); }
+
+textarea{ resize:vertical; max-width:100%; }
+
+/* animated login orbs */
+.login-orbs{ position:fixed; inset:0; pointer-events:none; z-index:-1; filter:blur(60px); }
+.login-orbs::before,
+.login-orbs::after{
+  content:""; position:absolute; width:240px; height:240px; border-radius:50%;
+  background: radial-gradient(circle at center, var(--accent1) 0%, transparent 70%);
+  opacity:.6; animation:orb1 20s ease-in-out infinite alternate;
+}
+.login-orbs::after{
+  background: radial-gradient(circle at center, var(--accent2) 0%, transparent 70%);
+  animation:orb2 26s ease-in-out infinite alternate;
+}
+@keyframes orb1{ from{ transform:translate(-30%, -20%); } to{ transform:translate(120%, 80%); } }
+@keyframes orb2{ from{ transform:translate(80%, -40%); } to{ transform:translate(-60%, 100%); } }
+
+/* background waveforms */
+.waves{ position:absolute; inset:0; width:100%; height:100%; opacity:.35; mix-blend-mode:overlay; }
+.wave-group{ stroke:var(--accent2); fill:none; stroke-width:2; animation:waveSlide 12s linear infinite; }
+.wave-group.slow{ stroke:var(--accent1); animation-duration:20s; opacity:.5; }
+@keyframes waveSlide{ from{ transform:translateX(0); } to{ transform:translateX(-1000px); } }
+
 /* Icon buttons */
 .iconbtn{
   appearance:none; border:0; cursor:pointer;

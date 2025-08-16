@@ -57,15 +57,12 @@ export default function Page(){
   return (
     <main>
       <GlowBackground base={palette} avgQuality={avgQuality} theme={theme} />
+      {!session?.user && <div className="login-orbs" aria-hidden />}
       <div className="container">
-        <header className="bar">
-          <div className="brand">
-            <span className="dot" />
-            <span>Sleep Journal</span>
-            <span className="muted">• drift into dreams</span>
-          </div>
+        <header className="bar" style={{maxWidth:680, margin:'0 auto 24px'}}>
+          <h1 style={{margin:0, fontSize:'1.8rem', flex:1}}>Your Sleep Journal</h1>
           <div className="rowflex">
-            <button className="ghost" onClick={toggleTheme}>Toggle Theme</button>
+            <button className="iconbtn" onClick={toggleTheme} aria-label="Toggle theme">{theme==='dark' ? '☀' : '☾'}</button>
             {session?.user ? (
               <>
                 <span className="muted" style={{marginLeft:8}}>{session.user.email}</span>
@@ -76,19 +73,19 @@ export default function Page(){
         </header>
 
         {session?.user ? (
-          <div className="grid">
-            <section className="card">
+          <>
+            <section className="card" style={{maxWidth:680, margin:'0 auto'}}>
               <h2>Log your sleep</h2>
               <SleepForm onSaved={() => { refreshAvg(); setRefreshKey(k => k + 1); }} />
             </section>
-            <section className="card">
+            <section className="card" style={{maxWidth:680, margin:'24px auto 0'}}>
               <h2>Your entries</h2>
               <EntriesList refreshKey={refreshKey} />
-              </section>
-            </div>
-          ) : (
-          <section className="card">
-            <h2>Welcome 👋</h2>
+            </section>
+          </>
+        ) : (
+          <section className="card" style={{maxWidth:500, margin:'0 auto'}}>
+            <h2>Welcome</h2>
             <p className="muted">Sign in with <b>email & password</b> or use a <b>magic link</b>. No servers required.</p>
             <AuthPanel />
           </section>
