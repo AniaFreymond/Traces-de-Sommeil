@@ -43,7 +43,7 @@ export default function Page(){
   }
   useEffect(()=>{ refreshAvg(); }, [session]);
 
-  // pastel palette for the dynamic glow
+  // base palette for the dynamic glow
   const palette = useMemo(()=>({ a:'#cfe8ff', b:'#ffe1e8', c:'#e3f7e8' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -62,7 +62,7 @@ export default function Page(){
           <div className="brand">
             <span className="dot" />
             <span>Sleep Journal</span>
-            <span className="muted">• pastel & calming</span>
+            <span className="muted">• drift into dreams</span>
           </div>
           <div className="rowflex">
             <button className="ghost" onClick={toggleTheme}>Toggle Theme</button>
@@ -94,7 +94,6 @@ export default function Page(){
           </section>
         )}
 
-        <p className="footer">Vercel-ready • Supabase sync • Dynamic glow ✨</p>
       </div>
     </main>
   );
