@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import StarRating from './StarRating';
 
 export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
   const today = new Date();
@@ -59,8 +60,8 @@ export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
         <div className="field"><label>Bedtime</label><input type="text" placeholder="HH:MM" value={bed} onChange={e=>{ const v=e.target.value; setBed(v); setBedError(isValidTime(v)?'':'Use HH:MM'); }} inputMode="numeric" required/>{bedError && <p className="error">{bedError}</p>}</div>
         <div className="field"><label>Wake time</label><input type="text" placeholder="HH:MM" value={wake} onChange={e=>{ const v=e.target.value; setWake(v); setWakeError(isValidTime(v)?'':'Use HH:MM'); }} inputMode="numeric" required/>{wakeError && <p className="error">{wakeError}</p>}</div>
       </div>
-      <label>Sleep quality: <b>{quality}</b></label>
-      <input type="range" min={1} max={5} step={1} value={quality} onChange={e=>setQuality(Number(e.target.value))} />
+      <label>Sleep quality</label>
+      <StarRating value={quality} onChange={setQuality} />
       <label>Notes</label>
       <textarea rows={4} placeholder="Caffeine? Exercise? Woke at night? Dreams?" value={notes} onChange={e=>setNotes(e.target.value)} />
       <div className="rowflex" style={{marginTop:10}}>
