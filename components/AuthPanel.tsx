@@ -8,7 +8,6 @@ const SITE_URL =
 
 export default function AuthPanel(){
   const [mode, setMode] = useState<'password'|'magic'>('password');
-  // maintain separate state for each form to avoid cross-contamination
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
   const [signUpEmail, setSignUpEmail] = useState('');
@@ -17,7 +16,6 @@ export default function AuthPanel(){
   const [magicEmail, setMagicEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  // clear status message when switching between modes
   function switchMode(next: 'password' | 'magic'){
     setMode(next);
     setMessage('');
@@ -62,22 +60,16 @@ export default function AuthPanel(){
 
   return (
     <div>
-      <div className="rowflex" style={{gap:6, margin:'8px 0 14px'}}>
-        <button className={mode==='password'?'':''} onClick={()=>switchMode('password')}>Email & Password</button>
-        <button className={mode==='magic'?'':'ghost'} onClick={()=>switchMode('magic')}>Magic Link</button>
-      </div>
-
-      {mode==='password' ? (
-        <div className="rowflex wrap" style={{gap:18}}>
-          <form onSubmit={signIn} style={{flex:'1 1 280px'}}>
-            <h3 style={{margin:'4px 0'}}>Sign in</h3>
+      <section className="card" style={{maxWidth:500, margin:'0 auto'}}>
+        <h3 style={{margin:'4px 0'}}>Sign in</h3>
+        {mode==='password' ? (
+          <form onSubmit={signIn} style={{marginTop:8}}>
             <input
               type="email"
               required
               placeholder="you@example.com"
               value={signInEmail}
               onChange={e=>setSignInEmail(e.target.value)}
-              style={{marginTop:8}}
             />
             <input
               type="password"
@@ -92,50 +84,57 @@ export default function AuthPanel(){
               <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
             </div>
           </form>
-          <form onSubmit={signUp} style={{flex:'1 1 280px'}}>
-            <h3 style={{margin:'4px 0'}}>Create account</h3>
+        ) : (
+          <form onSubmit={sendMagicLink} className="rowflex" style={{gap:12, flexWrap:'wrap', marginTop:8}}>
             <input
               type="email"
               required
               placeholder="you@example.com"
-              value={signUpEmail}
-              onChange={e=>setSignUpEmail(e.target.value)}
-              style={{marginTop:8}}
+              value={magicEmail}
+              onChange={e=>setMagicEmail(e.target.value)}
+              style={{flex:'1 1 260px'}}
             />
-            <input
-              type="password"
-              required
-              placeholder="new password"
-              value={signUpPassword}
-              onChange={e=>setSignUpPassword(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="confirm password"
-              value={signUpConfirm}
-              onChange={e=>setSignUpConfirm(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <button type="submit" style={{marginTop:8}}>Sign up</button>
+            <button type="submit">Send magic link</button>
           </form>
+        )}
+        <div className="rowflex" style={{gap:6, marginTop:14}}>
+          <button className={mode==='password'?'':'ghost'} onClick={()=>switchMode('password')}>Email & Password</button>
+          <button className={mode==='magic'?'':'ghost'} onClick={()=>switchMode('magic')}>Magic Link</button>
         </div>
-      ) : (
-        <form onSubmit={sendMagicLink} className="rowflex" style={{gap:12, flexWrap:'wrap', marginTop:8}}>
+      </section>
+
+      <section className="card" style={{maxWidth:500, margin:'24px auto 0'}}>
+        <form onSubmit={signUp}>
+          <h3 style={{margin:'4px 0'}}>Create account</h3>
           <input
             type="email"
             required
             placeholder="you@example.com"
-            value={magicEmail}
-            onChange={e=>setMagicEmail(e.target.value)}
-            style={{flex:'1 1 260px'}}
+            value={signUpEmail}
+            onChange={e=>setSignUpEmail(e.target.value)}
+            style={{marginTop:8}}
           />
-          <button type="submit">Send magic link</button>
+          <input
+            type="password"
+            required
+            placeholder="new password"
+            value={signUpPassword}
+            onChange={e=>setSignUpPassword(e.target.value)}
+            style={{marginTop:8}}
+          />
+          <input
+            type="password"
+            required
+            placeholder="confirm password"
+            value={signUpConfirm}
+            onChange={e=>setSignUpConfirm(e.target.value)}
+            style={{marginTop:8}}
+          />
+          <button type="submit" style={{marginTop:8}}>Sign up</button>
         </form>
-      )}
+      </section>
 
-      <p className="muted" style={{marginTop:8}}>{message}</p>
+      <p className="muted" style={{textAlign:'center', marginTop:8}}>{message}</p>
     </div>
   );
 }

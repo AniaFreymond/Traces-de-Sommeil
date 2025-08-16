@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import StarRating from './StarRating';
 
 type Row = {
   id: string;
@@ -143,8 +144,8 @@ function EditModal({ row, onClose, onSave }:{
           <div className="field"><label>Wake time</label><input type="text" placeholder="HH:MM" value={wake} onChange={e=>{ const v=e.target.value; setWake(v); setWakeError(isValidTime(v)?'':'Use HH:MM'); }} inputMode="numeric" />{wakeError && <p className="error">{wakeError}</p>}</div>
         </div>
 
-        <label style={{marginTop:10}}>Sleep quality: <b>{quality}</b></label>
-        <input type="range" min={1} max={5} step={1} value={quality} onChange={e=>setQuality(Number(e.target.value))} />
+        <label style={{marginTop:10}}>Sleep quality</label>
+        <StarRating value={quality} onChange={setQuality} />
 
         <label>Notes</label>
         <textarea rows={4} placeholder="Caffeine? Exercise? Woke at night?" value={notes} onChange={e=>setNotes(e.target.value)} />

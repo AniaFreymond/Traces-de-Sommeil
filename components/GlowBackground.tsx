@@ -15,8 +15,8 @@ export default function GlowBackground({ theme }: Props){
     let raf = 0;
     let t = 0;
 
-    const speed = 0.006;   
-    const spread = 1.0;       
+    const speed = 0.006;
+    const spread = 1.0;
 
     const step = () => {
       t += speed;
@@ -35,6 +35,20 @@ export default function GlowBackground({ theme }: Props){
       className={`glow glow-full ${theme === 'dark' ? 'glow-dark' : 'glow-light'}`}
       aria-hidden
     >
+      {/* animated waveforms */}
+      <svg className="waves" viewBox="0 0 1000 200" preserveAspectRatio="none">
+        <defs>
+          <path id="wavePath" d="M0 100 Q 50 50 100 100 T 200 100 T 300 100 T 400 100 T 500 100 T 600 100 T 700 100 T 800 100 T 900 100 T 1000 100" />
+        </defs>
+        <g className="wave-group">
+          <use href="#wavePath" />
+          <use href="#wavePath" x="1000" />
+        </g>
+        <g className="wave-group slow">
+          <use href="#wavePath" />
+          <use href="#wavePath" x="1000" />
+        </g>
+      </svg>
       {theme === 'dark' && <div className="glow-grid" />}
     </div>
   );
