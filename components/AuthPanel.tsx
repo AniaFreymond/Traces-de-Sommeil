@@ -16,6 +16,7 @@ export default function AuthPanel(){
   const [signUpConfirm, setSignUpConfirm] = useState('');
   const [magicEmail, setMagicEmail] = useState('');
   const [message, setMessage] = useState('');
+  const [showSignUp, setShowSignUp] = useState(false);
 
   // clear status message when switching between modes
   function switchMode(next: 'password' | 'magic'){
@@ -68,61 +69,59 @@ export default function AuthPanel(){
       </div>
 
       {mode==='password' ? (
-        <div style={{display:'flex', flexDirection:'column', gap:20}}>
-          <form onSubmit={signIn}>
-            <h3 style={{margin:'4px 0'}}>Sign in</h3>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={signInEmail}
-              onChange={e=>setSignInEmail(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="password"
-              value={signInPassword}
-              onChange={e=>setSignInPassword(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <div className="rowflex" style={{marginTop:8}}>
-              <button type="submit">Sign in</button>
-              <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
-            </div>
-          </form>
-          <form onSubmit={signUp}>
-            <h3 style={{margin:'4px 0'}}>Create account</h3>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={signUpEmail}
-              onChange={e=>setSignUpEmail(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="new password"
-              value={signUpPassword}
-              onChange={e=>setSignUpPassword(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="confirm password"
-              value={signUpConfirm}
-              onChange={e=>setSignUpConfirm(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <button type="submit" style={{marginTop:8}}>Sign up</button>
-          </form>
-        </div>
+        <form onSubmit={showSignUp ? signUp : signIn} className="card auth-block" style={{marginTop:8}}>
+          <h3 style={{margin:'4px 0'}}>{showSignUp ? 'Create account' : 'Sign in'}</h3>
+          <input
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={showSignUp ? signUpEmail : signInEmail}
+            onChange={e=> (showSignUp ? setSignUpEmail : setSignInEmail)(e.target.value)}
+            style={{marginTop:8}}
+          />
+          {showSignUp ? (
+            <>
+              <input
+                type="password"
+                required
+                placeholder="new password"
+                value={signUpPassword}
+                onChange={e=>setSignUpPassword(e.target.value)}
+                style={{marginTop:8}}
+              />
+              <input
+                type="password"
+                required
+                placeholder="confirm password"
+                value={signUpConfirm}
+                onChange={e=>setSignUpConfirm(e.target.value)}
+                style={{marginTop:8}}
+              />
+              <button type="submit" style={{marginTop:8}}>Sign up</button>
+              <button type="button" className="ghost" onClick={()=>setShowSignUp(false)} style={{marginTop:8}}>Have an account? Sign in</button>
+            </>
+          ) : (
+            <>
+              <input
+                type="password"
+                required
+                placeholder="password"
+                value={signInPassword}
+                onChange={e=>setSignInPassword(e.target.value)}
+                style={{marginTop:8}}
+              />
+              <div className="rowflex" style={{marginTop:8}}>
+                <button type="submit">Sign in</button>
+                <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
+              </div>
+              <p className="muted" style={{marginTop:8}}>
+                No account yet? <button type="button" className="ghost" onClick={()=>setShowSignUp(true)} style={{padding:0, background:'none', boxShadow:'none'}}>Sign up</button>
+              </p>
+            </>
+          )}
+        </form>
       ) : (
-        <form onSubmit={sendMagicLink} className="rowflex" style={{gap:12, flexWrap:'wrap', marginTop:8}}>
+        <form onSubmit={sendMagicLink} className="card auth-block rowflex" style={{gap:12, flexWrap:'wrap', marginTop:8}}>
           <input
             type="email"
             required

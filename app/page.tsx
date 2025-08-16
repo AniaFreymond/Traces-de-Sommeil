@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import GlowBackground from '../components/GlowBackground';
 import SleepForm from '../components/SleepForm';
@@ -8,7 +8,6 @@ import AuthPanel from '../components/AuthPanel';
 
 export default function Page(){
   const [session, setSession] = useState<any>(null);
-  const [avgQuality, setAvgQuality] = useState<number | null>(null);
   const [theme, setTheme] = useState<'light'|'dark'>('light');
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -29,22 +28,6 @@ export default function Page(){
     return ()=>{ sub.subscription.unsubscribe(); };
   },[]);
 
-  async function refreshAvg(){
-    const user = (await supabase.auth.getUser()).data.user;
-    if(!user){ setAvgQuality(null); return; }
-    const { data } = await supabase.from('sleep_entries')
-      .select('quality')
-      .eq('user_id', user.id)
-      .order('entry_date', { ascending: false })
-      .limit(14);
-    if(!data || data.length===0){ setAvgQuality(null); return; }
-    const avg = data.reduce((a,b)=>a+(b.quality||0),0)/data.length;
-    setAvgQuality(avg);
-  }
-  useEffect(()=>{ refreshAvg(); }, [session]);
-
-  // base palette for the dynamic glow
-  const palette = useMemo(()=>({ a:'#cfe8ff', b:'#ffe1e8', c:'#e3f7e8' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
     if (typeof document !== 'undefined') {
@@ -54,15 +37,16 @@ export default function Page(){
     setTheme(next);
   };
 
+  const blockWidth = session?.user ? 680 : 600;
+
   return (
     <main>
-      <GlowBackground base={palette} avgQuality={avgQuality} theme={theme} />
-      {!session?.user && <div className="login-orbs" aria-hidden />}
+      <GlowBackground theme={theme} />
       <div className="container">
-        <header className="bar" style={{maxWidth:680, margin:'0 auto 24px'}}>
-          <h1 style={{margin:0, fontSize:'1.8rem', flex:1}}>Your Sleep Journal</h1>
+        <header className="bar" style={{maxWidth:blockWidth, margin:'0 auto 24px'}}>
+          <h1 style={{margin:0, fontSize:'1.8rem', flex:1}}>Dream Logs</h1>
           <div className="rowflex">
-            <button className="iconbtn" onClick={toggleTheme} aria-label="Toggle theme">{theme==='dark' ? '☀' : '☾'}</button>
+            <button className="iconbtn theme-toggle" onClick={toggleTheme} aria-label="Toggle theme" style={{color: theme==='dark' ? '#ffd54f' : undefined}}>{theme==='dark' ? '☀' : '☾'}</button>
             {session?.user ? (
               <>
                 <span className="muted" style={{marginLeft:8}}>{session.user.email}</span>
@@ -74,21 +58,19 @@ export default function Page(){
 
         {session?.user ? (
           <>
-            <section className="card" style={{maxWidth:680, margin:'0 auto'}}>
+            <section className="card" style={{maxWidth:blockWidth, margin:'0 auto'}}>
               <h2>Log your sleep</h2>
-              <SleepForm onSaved={() => { refreshAvg(); setRefreshKey(k => k + 1); }} />
+              <SleepForm onSaved={() => { setRefreshKey(k => k + 1); }} />
             </section>
-            <section className="card" style={{maxWidth:680, margin:'24px auto 0'}}>
+            <section className="card" style={{maxWidth:blockWidth, margin:'24px auto 0'}}>
               <h2>Your entries</h2>
               <EntriesList refreshKey={refreshKey} />
             </section>
           </>
         ) : (
-          <section className="card" style={{maxWidth:500, margin:'0 auto'}}>
-            <h2>Welcome</h2>
-            <p className="muted">Sign in with <b>email & password</b> or use a <b>magic link</b>. No servers required.</p>
+          <div style={{maxWidth:blockWidth, margin:'0 auto'}}>
             <AuthPanel />
-          </section>
+          </div>
         )}
 
       </div>

@@ -8,17 +8,17 @@
 }
 html{ color-scheme:light dark; }
 html[data-theme="light"]{
-  --bg:linear-gradient(135deg,#ffe6fa,#e6f7ff);
-  --surface:rgba(255,255,255,0.6);
+  --bg:linear-gradient(135deg,#f7e8ff,#dff3ff,#ffe8f2);
+  --surface:rgba(255,255,255,0.4);
   --muted:rgba(255,255,255,0.3);
   --text:#1f2131;
   --accent1:var(--accent1-light);
   --accent2:var(--accent2-light);
 }
 html[data-theme="dark"]{
-  --bg:radial-gradient(circle at 50% 0%,#050b2a,#000);
-  --surface:rgba(20,22,40,0.6);
-  --muted:rgba(80,90,140,0.3);
+  --bg:linear-gradient(to bottom right,#0a0014,#0b1026,#11001f);
+  --surface:rgba(255,255,255,0.05);
+  --muted:rgba(255,255,255,0.1);
   --text:#e9ecff;
   --accent1:var(--accent1-dark);
   --accent2:var(--accent2-dark);
@@ -28,12 +28,15 @@ body{ margin:0; background:var(--bg); background-attachment:fixed; color:var(--t
 .container{ max-width:1000px; margin:0 auto; padding:28px; }
 
 /* Cards / bars */
-.bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; backdrop-filter: blur(8px); background: color-mix(in oklab, var(--surface) 80%, transparent); padding:12px 16px; margin:16px; border-radius:18px; box-shadow:var(--shadow); }
+.bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; backdrop-filter: blur(18px); background: color-mix(in oklab, var(--surface) 80%, transparent); padding:12px 16px; margin:16px; border-radius:18px; box-shadow:var(--shadow); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); }
 .brand{ display:flex; align-items:center; gap:12px; font-weight:700; }
 .brand .dot{ width:12px; height:12px; border-radius:99px; background: linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 0 18px var(--accent1); }
-.card{ backdrop-filter: blur(10px); background: color-mix(in oklab, var(--surface) 92%, transparent); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); border-radius:18px; box-shadow: var(--shadow); padding:18px; }
+.card{ backdrop-filter: blur(20px); background: color-mix(in oklab, var(--surface) 92%, transparent); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); border-radius:18px; box-shadow: var(--shadow); padding:18px; }
 .grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:20px; }
 @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
+
+.auth-grid{ display:flex; gap:20px; flex-wrap:wrap; align-items:stretch; }
+.auth-block{ flex:1 1 260px; display:flex; flex-direction:column; gap:12px; }
 
 /* Inputs */
 label{ display:block; font-weight:600; margin:10px 0 6px; }
@@ -54,75 +57,30 @@ button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(
 .rowflex.between{ justify-content:space-between; }
 .right{ margin-left:auto; }
 .field{ flex:1 1 180px; }
-
-/* Dynamic glow backdrop — full-viewport, refined */
-.glow.glow-full{
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  /* Slightly stronger blur for buttery gradients, modest saturation */
-  filter: blur(64px) saturate(118%);
+/* Aurora backdrop and effects */
+.aurora{ position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:-1; }
+.aurora-sweep{ position:absolute; inset:0; filter:blur(96px); opacity:.7; background:
+  radial-gradient(1200px 600px at -10% 110%, rgba(244,114,182,.35) 0%, rgba(244,114,182,0) 55%),
+  radial-gradient(900px 500px at 120% -10%, rgba(59,130,246,.30) 0%, rgba(59,130,246,0) 60%),
+  radial-gradient(700px 500px at 30% 10%, rgba(168,85,247,.28) 0%, rgba(168,85,247,0) 60%),
+  radial-gradient(900px 600px at 70% 90%, rgba(250,204,21,.25) 0%, rgba(250,204,21,0) 60%);
 }
-
-/* Two overlapping, oversized blobs to ensure full coverage on any screen ratio */
-.glow.glow-full::before,
-.glow.glow-full::after{
-  content: "";
-  position: absolute;
-  /* overscan so there are no edges on ultra-wide/tall screens */
-  left: -25vmax; right: -25vmax; top: -25vmax; bottom: -25vmax;
-  border-radius: 50%;
-}
-
-/* Primary lobe */
-.glow.glow-full::before{
-  background:
-    radial-gradient(40vmax 40vmax at 25% 35%, oklch(88% .10 var(--h,0)) 0%, transparent 70%),
-    radial-gradient(36vmax 36vmax at 70% 60%, oklch(86% .09 calc(var(--h,0) + 60)) 0%, transparent 72%);
-  transform: translate(calc(-6vmax*var(--spread,1)), -2vmax);
-  animation: float1 24s ease-in-out infinite alternate;
-}
-
-/* Secondary lobe */
-.glow.glow-full::after{
-  background:
-    radial-gradient(42vmax 42vmax at 30% 70%, oklch(90% .09 calc(var(--h,0) + 140)) 0%, transparent 72%),
-    radial-gradient(38vmax 38vmax at 75% 30%, oklch(90% .08 calc(var(--h,0) + 220)) 0%, transparent 70%);
-  transform: translate(calc(6vmax*var(--spread,1)), 2vmax);
-  animation: float2 28s ease-in-out infinite alternate;
-}
-
-/* Slightly quicker orbital motion to match the faster hue drift */
-@keyframes float1{
-  from{ transform: translate(calc(-6vmax*var(--spread,1)), -2vmax) scale(1); }
-  to  { transform: translate(calc( 6vmax*var(--spread,1)),  2vmax) scale(1.05); }
-}
-@keyframes float2{
-  from{ transform: translate(calc( 5vmax*var(--spread,1)),  1vmax) scale(1); }
-  to  { transform: translate(calc(-5vmax*var(--spread,1)), -1vmax) scale(1.06); }
-}
-
-/* Blend modes by theme keep things soft and legible */
-.glow-dark{  mix-blend-mode: screen;   opacity: .65; }
-.glow-light{ mix-blend-mode: multiply; opacity: .75; }
-
-.glow-grid{
-  position:absolute; inset:0;
-  background:
-    repeating-linear-gradient(45deg, rgba(255,0,234,.1) 0 2px, transparent 2px 20px),
-    repeating-linear-gradient(-45deg, rgba(0,229,255,.1) 0 2px, transparent 2px 20px);
-  mix-blend-mode:overlay;
-  animation:gridmove 20s linear infinite;
-}
-@keyframes gridmove{
-  from{ transform:translateY(0); }
-  to{ transform:translateY(40px); }
-}
-
-
-/* Subtle grain overlay for depth */
-body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity=".035"/></svg>'); mix-blend-mode: soft-light; }
+.blob{ position:absolute; border-radius:50%; filter:blur(120px); opacity:.6; mix-blend-mode:screen; }
+.blob.iris{ width:52rem; height:52rem; top:4rem; left:-10rem; }
+.blob.gradient{ width:46rem; height:46rem; bottom:-6rem; right:-6rem; background:linear-gradient(to top right, rgba(244,114,182,.5), rgba(139,92,246,.4), rgba(59,130,246,.5)); }
+.blob.light{ width:28rem; height:28rem; left:25%; top:-5rem; background:linear-gradient(to bottom, rgba(255,255,255,.7), rgba(236,72,153,.2), transparent); }
+.bg-stars{ position:absolute; inset:0; background-image:radial-gradient(white .7px, transparent .8px); background-size:24px 24px; opacity:.25; }
+.bg-noise{ position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,0.10) 1px, transparent 1px), radial-gradient(rgba(0,0,0,0.06) 1px, transparent 1px); background-size:3px 3px,4px 4px; background-position:0 0,1px 1px; mix-blend-mode:overlay; opacity:.45; }
+@keyframes drift{0%{transform:translate3d(0,0,0) rotate(0deg) scale(1);}50%{transform:translate3d(6%,-4%,0) rotate(20deg) scale(1.08);}100%{transform:translate3d(0,0,0) rotate(0deg) scale(1);}}
+@keyframes float{0%{transform:translateY(0);}50%{transform:translateY(-24px);}100%{transform:translateY(0);}}
+@keyframes hue{0%{filter:hue-rotate(0deg);}50%{filter:hue-rotate(25deg);}100%{filter:hue-rotate(0deg);}}
+.animate-drift{animation:drift 12s ease-in-out infinite;}
+.animate-drift-slow{animation:drift 20s ease-in-out infinite;}
+.animate-float{animation:float 10s ease-in-out infinite;}
+.animate-hue{animation:hue 16s linear infinite;}
+.ring-iris{background:
+  radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 60%),
+  conic-gradient(from 180deg, rgba(236,72,153,.45), rgba(139,92,246,.45), rgba(59,130,246,.45), rgba(99,102,241,.45), rgba(236,72,153,.45));}
 
 /* Sleeker entries */
 .sleek-list{ display:grid; gap:12px; }
@@ -158,33 +116,13 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-
 
 textarea{ resize:vertical; max-width:100%; }
 
-/* animated login orbs */
-.login-orbs{ position:fixed; inset:0; pointer-events:none; z-index:-1; filter:blur(60px); }
-.login-orbs::before,
-.login-orbs::after{
-  content:""; position:absolute; width:240px; height:240px; border-radius:50%;
-  background: radial-gradient(circle at center, var(--accent1) 0%, transparent 70%);
-  opacity:.6; animation:orb1 20s ease-in-out infinite alternate;
-}
-.login-orbs::after{
-  background: radial-gradient(circle at center, var(--accent2) 0%, transparent 70%);
-  animation:orb2 26s ease-in-out infinite alternate;
-}
-@keyframes orb1{ from{ transform:translate(-30%, -20%); } to{ transform:translate(120%, 80%); } }
-@keyframes orb2{ from{ transform:translate(80%, -40%); } to{ transform:translate(-60%, 100%); } }
-
-/* background waveforms */
-.waves{ position:absolute; inset:0; width:100%; height:100%; opacity:.35; mix-blend-mode:overlay; }
-.wave-group{ stroke:var(--accent2); fill:none; stroke-width:2; animation:waveSlide 12s linear infinite; }
-.wave-group.slow{ stroke:var(--accent1); animation-duration:20s; opacity:.5; }
-@keyframes waveSlide{ from{ transform:translateX(0); } to{ transform:translateX(-1000px); } }
-
 /* Icon buttons */
 .iconbtn{
   appearance:none; border:0; cursor:pointer;
   padding:6px 8px; border-radius:10px; line-height:1;
   background: color-mix(in oklab, var(--muted) 30%, transparent);
   box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  color:var(--text);
 }
 .iconbtn:hover{ transform: translateY(-1px); }
 .iconbtn.danger{ background: color-mix(in oklab, #ffb3c1 35%, transparent); }

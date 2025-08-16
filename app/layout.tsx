@@ -1,5 +1,5 @@
 import '../styles/globals.css';
-export const metadata = { title: 'Sleep Journal', description: 'Dreamy futuristic sleep journal with Supabase sync' };
+export const metadata = { title: 'Dream Logs', description: 'Dreamy futuristic sleep journal with Supabase sync' };
 
 const ThemeScript = () => (
   <script
