@@ -35,6 +35,9 @@ body{ margin:0; background:var(--bg); background-attachment:fixed; color:var(--t
 .grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:20px; }
 @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
 
+.auth-grid{ display:flex; gap:20px; flex-wrap:wrap; align-items:stretch; }
+.auth-block{ flex:1 1 260px; display:flex; flex-direction:column; gap:12px; }
+
 /* Inputs */
 label{ display:block; font-weight:600; margin:10px 0 6px; }
 input,textarea,select{ width:100%; border-radius:12px; border:1px solid color-mix(in oklab, var(--muted) 50%, transparent); background: color-mix(in oklab, var(--surface) 90%, transparent); color:var(--text); padding:10px 12px; }
@@ -79,18 +82,20 @@ button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(
 .glow.glow-full::before{
   background:
     radial-gradient(40vmax 40vmax at 25% 35%, oklch(88% .10 var(--h,0)) 0%, transparent 70%),
-    radial-gradient(36vmax 36vmax at 70% 60%, oklch(86% .09 calc(var(--h,0) + 60)) 0%, transparent 72%);
+    radial-gradient(36vmax 36vmax at 70% 60%, oklch(86% .09 calc(var(--h,0) + 120)) 0%, transparent 72%),
+    radial-gradient(44vmax 44vmax at 50% 80%, oklch(88% .08 calc(var(--h,0) + 240)) 0%, transparent 74%);
   transform: translate(calc(-6vmax*var(--spread,1)), -2vmax);
-  animation: float1 24s ease-in-out infinite alternate;
+  animation: float1 16s ease-in-out infinite alternate;
 }
 
 /* Secondary lobe */
 .glow.glow-full::after{
   background:
-    radial-gradient(42vmax 42vmax at 30% 70%, oklch(90% .09 calc(var(--h,0) + 140)) 0%, transparent 72%),
-    radial-gradient(38vmax 38vmax at 75% 30%, oklch(90% .08 calc(var(--h,0) + 220)) 0%, transparent 70%);
+    radial-gradient(42vmax 42vmax at 30% 70%, oklch(90% .09 calc(var(--h,0) + 60)) 0%, transparent 72%),
+    radial-gradient(38vmax 38vmax at 75% 30%, oklch(90% .08 calc(var(--h,0) + 180)) 0%, transparent 70%),
+    radial-gradient(46vmax 46vmax at 20% 20%, oklch(92% .08 calc(var(--h,0) + 300)) 0%, transparent 68%);
   transform: translate(calc(6vmax*var(--spread,1)), 2vmax);
-  animation: float2 28s ease-in-out infinite alternate;
+  animation: float2 18s ease-in-out infinite alternate;
 }
 
 /* Slightly quicker orbital motion to match the faster hue drift */
@@ -185,6 +190,7 @@ textarea{ resize:vertical; max-width:100%; }
   padding:6px 8px; border-radius:10px; line-height:1;
   background: color-mix(in oklab, var(--muted) 30%, transparent);
   box-shadow: 0 2px 10px rgba(0,0,0,.08);
+  color:var(--text);
 }
 .iconbtn:hover{ transform: translateY(-1px); }
 .iconbtn.danger{ background: color-mix(in oklab, #ffb3c1 35%, transparent); }
