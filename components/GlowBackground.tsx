@@ -34,6 +34,8 @@ export default function GlowBackground({ theme }: Props){
       ref={ref}
       className={`glow glow-full ${theme === 'dark' ? 'glow-dark' : 'glow-light'}`}
       aria-hidden
-    />
+    >
+      {theme === 'dark' && <div className="glow-grid" />}
+    </div>
   );
 }
