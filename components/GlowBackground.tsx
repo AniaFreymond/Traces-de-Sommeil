@@ -15,8 +15,8 @@ export default function GlowBackground({ theme }: Props){
     let raf = 0;
     let t = 0;
 
-    const speed = 0.006;
-    const spread = 1.0;
+    const speed = 0.012;
+    const spread = 0.8;
 
     const step = () => {
       t += speed;
