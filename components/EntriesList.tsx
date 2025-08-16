@@ -12,20 +12,13 @@ type Row = {
   notes: string|null;
 };
 
-type ActionStyle = 'icons' | 'text';
+const timeRegex = /^([01]?\d|2[0-3]):[0-5]\d$/;
+const isValidTime = (v:string)=> timeRegex.test(v);
 
 export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number }) {
   const [rows, setRows] = useState<Row[]|null>(null);
   const [editing, setEditing] = useState<Row | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [actionStyle, setActionStyle] = useState<ActionStyle>(() => {
-    if (typeof localStorage === 'undefined') return 'icons';
-    return (localStorage.getItem('entries_action_style') as ActionStyle) || 'icons';
-  });
-
-  useEffect(() => {
-    try { localStorage.setItem('entries_action_style', actionStyle); } catch {}
-  }, [actionStyle]);
 
   async function load(){
     const { data: { user } } = await supabase.auth.getUser();
@@ -76,60 +69,24 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
 
   return (
     <>
-      {/* Small control to switch Icons/Text */}
-      <div className="actions-style">
-        <span className="muted" style={{fontSize:13}}>Actions:</span>
-        <div className="segmented">
-          <button
-            className={`seg ${actionStyle==='icons'?'on':''}`}
-            onClick={()=>setActionStyle('icons')}
-            type="button"
-          >Icons</button>
-          <button
-            className={`seg ${actionStyle==='text'?'on':''}`}
-            onClick={()=>setActionStyle('text')}
-            type="button"
-          >Text</button>
-        </div>
-      </div>
-
       <div className="sleek-list">
         {rows.map(r=> (
           <article key={r.id} className="entry sleek">
             <div className="entry-head">
               <div className="entry-date">{fmtDate(r.entry_date)}</div>
               <div className="entry-actions">
-                {actionStyle === 'icons' ? (
-                  <>
-                    <button className="iconbtn" onClick={()=>openEdit(r)} aria-label="Edit">
-                      <span aria-hidden>✏️</span><span className="sr-only">Edit</span>
-                    </button>
-                    <button
-                      className="iconbtn danger"
-                      onClick={()=>onDelete(r.id)}
-                      disabled={loadingId===r.id}
-                      aria-label="Delete"
-                    >
-                      <span aria-hidden>{loadingId===r.id ? '…' : '🗑️'}</span>
-                      <span className="sr-only">Delete</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="textbtn" onClick={()=>openEdit(r)}>Edit</button>
-                    <button
-                      className="textbtn danger"
-                      onClick={()=>onDelete(r.id)}
-                      disabled={loadingId===r.id}
-                    >{loadingId===r.id ? 'Deleting…' : 'Delete'}</button>
-                  </>
-                )}
+                <button className="textbtn" onClick={()=>openEdit(r)}>Edit</button>
+                <button
+                  className="textbtn danger"
+                  onClick={()=>onDelete(r.id)}
+                  disabled={loadingId===r.id}
+                >{loadingId===r.id ? 'Deleting…' : 'Delete'}</button>
               </div>
             </div>
 
             <div className="entry-meta">
               <span className="muted">{r.bedtime||'—'} → {r.waketime||'—'}</span>
-              <span className="chip">{r.duration_minutes ? fmtHM(r.duration_minutes) : '—'}</span>
+              <span className="chip">Duration {r.duration_minutes ? fmtHM(r.duration_minutes) : '—'}</span>
               <span className="stars" title={`${r.quality ?? 0} / 5`}>
                 {renderStars(r.quality ?? 0)}
               </span>
@@ -159,6 +116,8 @@ function EditModal({ row, onClose, onSave }:{
   const [date, setDate] = useState(row.entry_date);
   const [bed, setBed] = useState(row.bedtime || '');
   const [wake, setWake] = useState(row.waketime || '');
+  const [bedError, setBedError] = useState('');
+  const [wakeError, setWakeError] = useState('');
   const [quality, setQuality] = useState(row.quality ?? 3);
   const [notes, setNotes] = useState(row.notes || '');
 
@@ -180,21 +139,33 @@ function EditModal({ row, onClose, onSave }:{
 
         <div className="rowflex wrap" style={{gap:12}}>
           <div className="field"><label>Date</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} required/></div>
-          <div className="field"><label>Bedtime</label><input type="time" value={bed} onChange={e=>setBed(e.target.value)} /></div>
-          <div className="field"><label>Wake time</label><input type="time" value={wake} onChange={e=>setWake(e.target.value)} /></div>
+          <div className="field"><label>Bedtime</label><input type="text" placeholder="HH:MM" value={bed} onChange={e=>{ const v=e.target.value; setBed(v); setBedError(isValidTime(v)?'':'Use HH:MM'); }} inputMode="numeric" />{bedError && <p className="error">{bedError}</p>}</div>
+          <div className="field"><label>Wake time</label><input type="text" placeholder="HH:MM" value={wake} onChange={e=>{ const v=e.target.value; setWake(v); setWakeError(isValidTime(v)?'':'Use HH:MM'); }} inputMode="numeric" />{wakeError && <p className="error">{wakeError}</p>}</div>
         </div>
 
-        <label style={{marginTop:10}}>Sleep quality: <b>{quality}</b></label>
-        <input type="range" min={1} max={5} step={1} value={quality} onChange={e=>setQuality(Number(e.target.value))} />
+        <label style={{marginTop:10}}>Sleep quality</label>
+        <div className="rating" aria-label="Sleep quality">
+          {[1,2,3,4,5].map(i=> (
+            <button
+              type="button"
+              key={i}
+              className={i<=quality? 'star active':'star'}
+              onClick={()=>setQuality(i)}
+              aria-label={`${i} star${i>1?'s':''}`}
+            >
+              ★
+            </button>
+          ))}
+        </div>
 
         <label>Notes</label>
         <textarea rows={4} placeholder="Caffeine? Exercise? Woke at night?" value={notes} onChange={e=>setNotes(e.target.value)} />
 
         <div className="rowflex between" style={{marginTop:14}}>
-          <span className="chip">⏱ {fmtHM(duration)}</span>
+          <span className="chip">Duration {duration>0 ? fmtHM(duration) : '—'}</span>
           <div className="rowflex" style={{gap:8}}>
             <button className="ghost" onClick={onClose}>Cancel</button>
-            <button onClick={()=> onSave({ entry_date: date, bedtime: bed, waketime: wake, quality, notes })}>Save</button>
+            <button onClick={()=>{ const bOk=isValidTime(bed); const wOk=isValidTime(wake); setBedError(bOk?'':'Use HH:MM'); setWakeError(wOk?'':'Use HH:MM'); if(bOk && wOk) onSave({ entry_date: date, bedtime: bed, waketime: wake, quality, notes }); }}>Save</button>
           </div>
         </div>
       </div>
@@ -210,6 +181,7 @@ function fmtHM(mins:number){ const h = Math.floor(mins/60), m = mins%60; return 
 function escapeHtml(s:string){ return s.replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' } as any)[c]); }
 function estimateDurationMinutes(dateStr?: string, bedStr?: string, wakeStr?: string){
   if(!dateStr || !bedStr || !wakeStr) return 0;
+  if(!isValidTime(bedStr) || !isValidTime(wakeStr)) return 0;
   const [bh,bm] = bedStr.split(':').map(Number);
   const [wh,wm] = wakeStr.split(':').map(Number);
   const d = new Date(dateStr + 'T00:00:00');

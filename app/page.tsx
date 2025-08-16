@@ -43,7 +43,7 @@ export default function Page(){
   }
   useEffect(()=>{ refreshAvg(); }, [session]);
 
-  // pastel palette for the dynamic glow
+  // base palette for the dynamic glow
   const palette = useMemo(()=>({ a:'#cfe8ff', b:'#ffe1e8', c:'#e3f7e8' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
@@ -56,16 +56,18 @@ export default function Page(){
 
   return (
     <main>
-      <GlowBackground base={palette} avgQuality={avgQuality} theme={theme} />
+      <GlowBackground base={palette} avgQuality={avgQuality} theme={theme} showOrbs={!session?.user} />
       <div className="container">
         <header className="bar">
           <div className="brand">
             <span className="dot" />
             <span>Sleep Journal</span>
-            <span className="muted">• pastel & calming</span>
+            <span className="muted">• drift into dreams</span>
           </div>
           <div className="rowflex">
-            <button className="ghost" onClick={toggleTheme}>Toggle Theme</button>
+            <button className="iconbtn" onClick={toggleTheme} aria-label="Toggle theme">
+              {theme === 'dark' ? '☀' : '☾'}
+            </button>
             {session?.user ? (
               <>
                 <span className="muted" style={{marginLeft:8}}>{session.user.email}</span>
@@ -76,17 +78,17 @@ export default function Page(){
         </header>
 
         {session?.user ? (
-          <div className="grid">
+          <div>
             <section className="card">
               <h2>Log your sleep</h2>
               <SleepForm onSaved={() => { refreshAvg(); setRefreshKey(k => k + 1); }} />
             </section>
-            <section className="card">
+            <section className="card" style={{marginTop:20}}>
               <h2>Your entries</h2>
               <EntriesList refreshKey={refreshKey} />
-              </section>
-            </div>
-          ) : (
+            </section>
+          </div>
+        ) : (
           <section className="card">
             <h2>Welcome 👋</h2>
             <p className="muted">Sign in with <b>email & password</b> or use a <b>magic link</b>. No servers required.</p>
@@ -94,7 +96,6 @@ export default function Page(){
           </section>
         )}
 
-        <p className="footer">Vercel-ready • Supabase sync • Dynamic glow ✨</p>
       </div>
     </main>
   );

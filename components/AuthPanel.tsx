@@ -68,8 +68,8 @@ export default function AuthPanel(){
       </div>
 
       {mode==='password' ? (
-        <div className="rowflex wrap" style={{gap:18}}>
-          <form onSubmit={signIn} style={{flex:'1 1 280px'}}>
+        <div>
+          <form onSubmit={signIn} style={{marginBottom:24}}>
             <h3 style={{margin:'4px 0'}}>Sign in</h3>
             <input
               type="email"
@@ -92,7 +92,7 @@ export default function AuthPanel(){
               <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
             </div>
           </form>
-          <form onSubmit={signUp} style={{flex:'1 1 280px'}}>
+          <form onSubmit={signUp}>
             <h3 style={{margin:'4px 0'}}>Create account</h3>
             <input
               type="email"
