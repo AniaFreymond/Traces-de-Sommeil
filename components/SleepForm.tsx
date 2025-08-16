@@ -37,6 +37,7 @@ export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
     const user = (await supabase.auth.getUser()).data.user;
     if(!user) return alert('Please sign in.');
     const payload = { user_id: user.id, entry_date: date, bedtime: bed, waketime: wake, duration_minutes: estimateDurationMinutes(date,bed,wake), quality, notes };
+    console.log('saving entry', payload);
     const { error } = await supabase.from('sleep_entries').insert(payload);
     if(error) return alert(error.message);
     setBed(''); setWake(''); setQuality(3); setNotes('');
