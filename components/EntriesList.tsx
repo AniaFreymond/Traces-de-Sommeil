@@ -12,20 +12,13 @@ type Row = {
   notes: string|null;
 };
 
-type ActionStyle = 'icons' | 'text';
+const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
+const isValidTime = (s:string)=> timePattern.test(s);
 
 export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number }) {
   const [rows, setRows] = useState<Row[]|null>(null);
   const [editing, setEditing] = useState<Row | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
-  const [actionStyle, setActionStyle] = useState<ActionStyle>(() => {
-    if (typeof localStorage === 'undefined') return 'icons';
-    return (localStorage.getItem('entries_action_style') as ActionStyle) || 'icons';
-  });
-
-  useEffect(() => {
-    try { localStorage.setItem('entries_action_style', actionStyle); } catch {}
-  }, [actionStyle]);
 
   async function load(){
     const { data: { user } } = await supabase.auth.getUser();
@@ -76,54 +69,18 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
 
   return (
     <>
-      {/* Small control to switch Icons/Text */}
-      <div className="actions-style">
-        <span className="muted" style={{fontSize:13}}>Actions:</span>
-        <div className="segmented">
-          <button
-            className={`seg ${actionStyle==='icons'?'on':''}`}
-            onClick={()=>setActionStyle('icons')}
-            type="button"
-          >Icons</button>
-          <button
-            className={`seg ${actionStyle==='text'?'on':''}`}
-            onClick={()=>setActionStyle('text')}
-            type="button"
-          >Text</button>
-        </div>
-      </div>
-
       <div className="sleek-list">
         {rows.map(r=> (
           <article key={r.id} className="entry sleek">
             <div className="entry-head">
               <div className="entry-date">{fmtDate(r.entry_date)}</div>
               <div className="entry-actions">
-                {actionStyle === 'icons' ? (
-                  <>
-                    <button className="iconbtn" onClick={()=>openEdit(r)} aria-label="Edit">
-                      <span aria-hidden>✏️</span><span className="sr-only">Edit</span>
-                    </button>
-                    <button
-                      className="iconbtn danger"
-                      onClick={()=>onDelete(r.id)}
-                      disabled={loadingId===r.id}
-                      aria-label="Delete"
-                    >
-                      <span aria-hidden>{loadingId===r.id ? '…' : '🗑️'}</span>
-                      <span className="sr-only">Delete</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <button className="textbtn" onClick={()=>openEdit(r)}>Edit</button>
-                    <button
-                      className="textbtn danger"
-                      onClick={()=>onDelete(r.id)}
-                      disabled={loadingId===r.id}
-                    >{loadingId===r.id ? 'Deleting…' : 'Delete'}</button>
-                  </>
-                )}
+                <button className="textbtn" onClick={()=>openEdit(r)}>Edit</button>
+                <button
+                  className="textbtn danger"
+                  onClick={()=>onDelete(r.id)}
+                  disabled={loadingId===r.id}
+                >{loadingId===r.id ? 'Deleting…' : 'Delete'}</button>
               </div>
             </div>
 
@@ -161,6 +118,8 @@ function EditModal({ row, onClose, onSave }:{
   const [wake, setWake] = useState(row.waketime || '');
   const [quality, setQuality] = useState(row.quality ?? 3);
   const [notes, setNotes] = useState(row.notes || '');
+  const [bedError, setBedError] = useState<string|null>(null);
+  const [wakeError, setWakeError] = useState<string|null>(null);
 
   useEffect(()=>{
     const onEsc = (e: KeyboardEvent)=> { if (e.key === 'Escape') onClose(); };
@@ -180,8 +139,8 @@ function EditModal({ row, onClose, onSave }:{
 
         <div className="rowflex wrap" style={{gap:12}}>
           <div className="field"><label>Date</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} required/></div>
-          <div className="field"><label>Bedtime</label><input type="time" value={bed} onChange={e=>setBed(e.target.value)} /></div>
-          <div className="field"><label>Wake time</label><input type="time" value={wake} onChange={e=>setWake(e.target.value)} /></div>
+          <div className="field"><label>Bedtime</label><input placeholder="HH:MM" type="text" value={bed} onChange={e=>{setBed(e.target.value); setBedError(e.target.value && !isValidTime(e.target.value) ? 'Enter time as HH:MM' : null);}} />{bedError && <div className="error">{bedError}</div>}</div>
+          <div className="field"><label>Wake time</label><input placeholder="HH:MM" type="text" value={wake} onChange={e=>{setWake(e.target.value); setWakeError(e.target.value && !isValidTime(e.target.value) ? 'Enter time as HH:MM' : null);}} />{wakeError && <div className="error">{wakeError}</div>}</div>
         </div>
 
         <label style={{marginTop:10}}>Sleep quality: <b>{quality}</b></label>
@@ -191,10 +150,17 @@ function EditModal({ row, onClose, onSave }:{
         <textarea rows={4} placeholder="Caffeine? Exercise? Woke at night?" value={notes} onChange={e=>setNotes(e.target.value)} />
 
         <div className="rowflex between" style={{marginTop:14}}>
-          <span className="chip">⏱ {fmtHM(duration)}</span>
+          <span className="chip">Duration: {fmtHM(duration)}</span>
           <div className="rowflex" style={{gap:8}}>
             <button className="ghost" onClick={onClose}>Cancel</button>
-            <button onClick={()=> onSave({ entry_date: date, bedtime: bed, waketime: wake, quality, notes })}>Save</button>
+            <button onClick={()=>{
+              if(!isValidTime(bed) || !isValidTime(wake)){
+                setBedError(!isValidTime(bed) ? 'Enter time as HH:MM' : null);
+                setWakeError(!isValidTime(wake) ? 'Enter time as HH:MM' : null);
+                return;
+              }
+              onSave({ entry_date: date, bedtime: bed, waketime: wake, quality, notes });
+            }}>Save</button>
           </div>
         </div>
       </div>
@@ -209,9 +175,9 @@ function fmtDate(iso: string){
 function fmtHM(mins:number){ const h = Math.floor(mins/60), m = mins%60; return `${h}h ${String(m).padStart(2,'0')}m`; }
 function escapeHtml(s:string){ return s.replace(/[&<>"']/g, (c)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;' } as any)[c]); }
 function estimateDurationMinutes(dateStr?: string, bedStr?: string, wakeStr?: string){
-  if(!dateStr || !bedStr || !wakeStr) return 0;
-  const [bh,bm] = bedStr.split(':').map(Number);
-  const [wh,wm] = wakeStr.split(':').map(Number);
+  if(!dateStr || !isValidTime(bedStr||'') || !isValidTime(wakeStr||'')) return 0;
+  const [bh,bm] = (bedStr as string).split(':').map(Number);
+  const [wh,wm] = (wakeStr as string).split(':').map(Number);
   const d = new Date(dateStr + 'T00:00:00');
   const B = new Date(d); B.setHours(bh||0,bm||0,0,0);
   const W = new Date(d); W.setHours(wh||0,wm||0,0,0);

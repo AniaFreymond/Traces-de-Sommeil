@@ -43,57 +43,24 @@ button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(
 .right{ margin-left:auto; }
 .field{ flex:1 1 180px; }
 
-/* Dynamic glow backdrop — full-viewport, refined */
-.glow.glow-full{
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  /* Slightly stronger blur for buttery gradients, modest saturation */
-  filter: blur(64px) saturate(118%);
+/* Soft animated pastel gradient background */
+.pastel-bg{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:linear-gradient(120deg,var(--pastel-blue),var(--pastel-pink),var(--pastel-green));
+  background-size:200% 200%;
+  animation:pastelShift 40s ease-in-out infinite;
+  filter:blur(80px);
 }
-
-/* Two overlapping, oversized blobs to ensure full coverage on any screen ratio */
-.glow.glow-full::before,
-.glow.glow-full::after{
-  content: "";
-  position: absolute;
-  /* overscan so there are no edges on ultra-wide/tall screens */
-  left: -25vmax; right: -25vmax; top: -25vmax; bottom: -25vmax;
-  border-radius: 50%;
+@keyframes pastelShift{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
-
-/* Primary lobe */
-.glow.glow-full::before{
-  background:
-    radial-gradient(40vmax 40vmax at 25% 35%, oklch(88% .10 var(--h,0)) 0%, transparent 70%),
-    radial-gradient(36vmax 36vmax at 70% 60%, oklch(86% .09 calc(var(--h,0) + 60)) 0%, transparent 72%);
-  transform: translate(calc(-6vmax*var(--spread,1)), -2vmax);
-  animation: float1 24s ease-in-out infinite alternate;
-}
-
-/* Secondary lobe */
-.glow.glow-full::after{
-  background:
-    radial-gradient(42vmax 42vmax at 30% 70%, oklch(90% .09 calc(var(--h,0) + 140)) 0%, transparent 72%),
-    radial-gradient(38vmax 38vmax at 75% 30%, oklch(90% .08 calc(var(--h,0) + 220)) 0%, transparent 70%);
-  transform: translate(calc(6vmax*var(--spread,1)), 2vmax);
-  animation: float2 28s ease-in-out infinite alternate;
-}
-
-/* Slightly quicker orbital motion to match the faster hue drift */
-@keyframes float1{
-  from{ transform: translate(calc(-6vmax*var(--spread,1)), -2vmax) scale(1); }
-  to  { transform: translate(calc( 6vmax*var(--spread,1)),  2vmax) scale(1.05); }
-}
-@keyframes float2{
-  from{ transform: translate(calc( 5vmax*var(--spread,1)),  1vmax) scale(1); }
-  to  { transform: translate(calc(-5vmax*var(--spread,1)), -1vmax) scale(1.06); }
-}
-
-/* Blend modes by theme keep things soft and legible */
-.glow-dark{  mix-blend-mode: screen;   opacity: .65; }
-.glow-light{ mix-blend-mode: multiply; opacity: .75; }
+html[data-theme="dark"] .pastel-bg{mix-blend-mode:screen;opacity:.55;}
+html[data-theme="light"] .pastel-bg{mix-blend-mode:multiply;opacity:.7;}
 
 
 /* Subtle grain overlay for depth */
@@ -140,24 +107,6 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-
   border-radius:16px; box-shadow: var(--shadow); padding:16px;
 }
 
-/* Toggle for Icons/Text */
-.actions-style{
-  display:flex; align-items:center; justify-content:flex-end; gap:8px; margin:6px 0 10px;
-}
-.segmented{
-  display:inline-flex; gap:2px; padding:2px;
-  border-radius:999px;
-  background: color-mix(in oklab, var(--muted) 30%, transparent);
-}
-.segmented .seg{
-  border:0; padding:6px 10px; border-radius:999px; cursor:pointer;
-  background: transparent; color: var(--text); font-weight:600; font-size:12px;
-}
-.segmented .seg.on{
-  background: color-mix(in oklab, var(--surface) 85%, transparent);
-  box-shadow: 0 2px 8px rgba(0,0,0,.10);
-}
-
 .textbtn{
   appearance:none; border:0; background: color-mix(in oklab, var(--muted) 28%, transparent);
   padding:6px 10px; border-radius:10px; cursor:pointer; font-weight:700;
@@ -170,3 +119,5 @@ body::after{ content:""; position:fixed; inset:0; pointer-events:none; z-index:-
   position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
   clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
+
+.error{ color:#d33; font-size:13px; margin-top:4px; }
