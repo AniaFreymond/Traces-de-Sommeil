@@ -8,6 +8,7 @@ const SITE_URL =
 
 export default function AuthPanel(){
   const [mode, setMode] = useState<'password'|'magic'>('password');
+  const [showSignUp, setShowSignUp] = useState(false);
   // maintain separate state for each form to avoid cross-contamination
   const [signInEmail, setSignInEmail] = useState('');
   const [signInPassword, setSignInPassword] = useState('');
@@ -20,6 +21,7 @@ export default function AuthPanel(){
   // clear status message when switching between modes
   function switchMode(next: 'password' | 'magic'){
     setMode(next);
+    setShowSignUp(false);
     setMessage('');
   }
 
@@ -63,53 +65,30 @@ export default function AuthPanel(){
   return (
     <div>
       <div className="rowflex" style={{gap:6, margin:'8px 0 14px'}}>
-        <button className={mode==='password'?'':''} onClick={()=>switchMode('password')}>Email & Password</button>
+        <button className={mode==='password'?'':''} onClick={()=>switchMode('password')}>Email</button>
         <button className={mode==='magic'?'':'ghost'} onClick={()=>switchMode('magic')}>Magic Link</button>
       </div>
 
       {mode==='password' ? (
-        <div className="auth-grid" style={{marginTop:8}}>
-          <form onSubmit={signIn} className="card auth-block">
-            <h3 style={{margin:'4px 0'}}>Sign in</h3>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={signInEmail}
-              onChange={e=>setSignInEmail(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="password"
-              value={signInPassword}
-              onChange={e=>setSignInPassword(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <div className="rowflex" style={{marginTop:8}}>
-              <button type="submit">Sign in</button>
-              <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
-            </div>
-          </form>
-          <form onSubmit={signUp} className="card auth-block">
-            <h3 style={{margin:'4px 0'}}>Create account</h3>
-            <input
-              type="email"
-              required
-              placeholder="you@example.com"
-              value={signUpEmail}
-              onChange={e=>setSignUpEmail(e.target.value)}
-              style={{marginTop:8}}
-            />
-            <input
-              type="password"
-              required
-              placeholder="new password"
-              value={signUpPassword}
-              onChange={e=>setSignUpPassword(e.target.value)}
-              style={{marginTop:8}}
-            />
+        <form onSubmit={showSignUp ? signUp : signIn} className="card auth-block" style={{marginTop:8}}>
+          <h3 style={{margin:'4px 0'}}>{showSignUp ? 'Create account' : 'Sign in'}</h3>
+          <input
+            type="email"
+            required
+            placeholder="you@example.com"
+            value={showSignUp ? signUpEmail : signInEmail}
+            onChange={e=> showSignUp ? setSignUpEmail(e.target.value) : setSignInEmail(e.target.value)}
+            style={{marginTop:8}}
+          />
+          <input
+            type="password"
+            required
+            placeholder="password"
+            value={showSignUp ? signUpPassword : signInPassword}
+            onChange={e=> showSignUp ? setSignUpPassword(e.target.value) : setSignInPassword(e.target.value)}
+            style={{marginTop:8}}
+          />
+          {showSignUp && (
             <input
               type="password"
               required
@@ -118,9 +97,21 @@ export default function AuthPanel(){
               onChange={e=>setSignUpConfirm(e.target.value)}
               style={{marginTop:8}}
             />
-            <button type="submit" style={{marginTop:8}}>Sign up</button>
-          </form>
-        </div>
+          )}
+          <div className="rowflex" style={{marginTop:8}}>
+            <button type="submit">{showSignUp ? 'Sign up' : 'Sign in'}</button>
+            {!showSignUp && (
+              <button type="button" className="ghost" onClick={forgotPassword}>Forgot?</button>
+            )}
+          </div>
+          <p className="muted" style={{marginTop:8}}>
+            {showSignUp ? (
+              <>Have an account? <button type="button" className="textbtn" onClick={()=>setShowSignUp(false)}>Sign in</button></>
+            ) : (
+              <>No account yet? <button type="button" className="textbtn" onClick={()=>setShowSignUp(true)}>Sign up</button></>
+            )}
+          </p>
+        </form>
       ) : (
         <form onSubmit={sendMagicLink} className="card auth-block rowflex" style={{gap:12, flexWrap:'wrap', marginTop:8}}>
           <input
