@@ -14,7 +14,7 @@ export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
   const [wake, setWake] = useState('');
   const [bedError, setBedError] = useState('');
   const [wakeError, setWakeError] = useState('');
-  const [quality, setQuality] = useState(3);
+  const [quality, setQuality] = useState(0);
   const [notes, setNotes] = useState('');
   const [duration, setDuration] = useState('0h 00m');
 
@@ -49,7 +49,7 @@ export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
     const payload = { user_id: user.id, entry_date: date, bedtime: bed, waketime: wake, duration_minutes: estimateDurationMinutes(date,bed,wake), quality, notes };
     const { error } = await supabase.from('sleep_entries').insert(payload);
     if(error) return alert(error.message);
-    setBed(''); setWake(''); setQuality(3); setNotes('');
+    setBed(''); setWake(''); setQuality(0); setNotes('');
     onSaved?.();
   }
 
@@ -65,8 +65,8 @@ export default function SleepForm({ onSaved }:{ onSaved?: ()=>void }){
       <label>Notes</label>
       <textarea rows={4} placeholder="Caffeine? Exercise? Woke at night? Dreams?" value={notes} onChange={e=>setNotes(e.target.value)} />
       <div className="rowflex" style={{marginTop:10}}>
-        <span className="chip">Duration {duration}</span>
-        <button className="right" type="submit">Save entry</button>
+        <span className="textbtn" style={{cursor:'default'}}>Duration {duration}</span>
+        <button className="textbtn right" type="submit">Save entry</button>
       </div>
     </form>
   );

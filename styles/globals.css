@@ -200,10 +200,10 @@ textarea{ resize:vertical; max-width:100%; }
 .iconbtn:disabled{ opacity:.5; cursor:default; transform:none; }
 
 /* Modal */
-.modal{ position:fixed; inset:0; background: color-mix(in oklab, #000 25%, transparent); display:grid; place-items:center; z-index:50; padding:16px; }
+.modal{ position:fixed; inset:0; background: color-mix(in oklab, #000 25%, transparent); display:flex; align-items:center; justify-content:center; z-index:50; padding:16px; }
 .modal-box{
-  width:min(680px, 92vw); background: color-mix(in oklab, var(--surface) 98%, transparent);
-  border:1px solid color-mix(in oklab, var(--muted) 50%, transparent);
+  width:min(680px, 92vw); backdrop-filter:blur(20px); background: color-mix(in oklab, var(--surface) 85%, #000 15%);
+  border:1px solid color-mix(in oklab, var(--muted) 55%, transparent);
   border-radius:16px; box-shadow: var(--shadow); padding:16px;
 }
 
