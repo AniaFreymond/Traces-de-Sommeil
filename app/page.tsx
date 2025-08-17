@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import GlowBackground from '../components/GlowBackground';
 import SleepForm from '../components/SleepForm';
@@ -43,8 +43,6 @@ export default function Page(){
   }
   useEffect(()=>{ refreshAvg(); }, [session]);
 
-  // base palette for the dynamic glow
-  const palette = useMemo(()=>({ a:'#cfe8ff', b:'#ffe1e8', c:'#e3f7e8' }),[]);
   const toggleTheme = ()=>{
     const next = theme === 'dark' ? 'light' : 'dark';
     if (typeof document !== 'undefined') {
@@ -58,8 +56,7 @@ export default function Page(){
 
   return (
     <main>
-      <GlowBackground base={palette} avgQuality={avgQuality} theme={theme} />
-      {!session?.user && <div className="login-orbs" aria-hidden />}
+      <GlowBackground theme={theme} />
       <div className="container">
         <header className="bar" style={{maxWidth:blockWidth, margin:'0 auto 24px'}}>
           <h1 style={{margin:0, fontSize:'1.8rem', flex:1}}>Dream Logs</h1>

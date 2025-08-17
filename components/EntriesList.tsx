@@ -54,7 +54,7 @@ export default function EntriesList({ refreshKey = 0 }: { refreshKey?: number })
       bedtime: updated.bedtime ?? null,
       waketime: updated.waketime ?? null,
       duration_minutes: estimateDurationMinutes(updated.entry_date!, updated.bedtime||'', updated.waketime||''),
-      quality: Number(updated.quality ?? 3),
+      quality: Number(updated.quality ?? 0),
       notes: (updated.notes ?? '').trim() || null
     };
     setLoadingId(editing.id);
@@ -119,7 +119,7 @@ function EditModal({ row, onClose, onSave }:{
   const [wake, setWake] = useState(row.waketime || '');
   const [bedError, setBedError] = useState('');
   const [wakeError, setWakeError] = useState('');
-  const [quality, setQuality] = useState(row.quality ?? 3);
+  const [quality, setQuality] = useState(row.quality ?? 0);
   const [notes, setNotes] = useState(row.notes || '');
 
   useEffect(()=>{
