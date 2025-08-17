@@ -24,14 +24,16 @@ html[data-theme="dark"]{
   --accent2:var(--accent2-dark);
 }
 
-body{ margin:0; background:var(--bg); background-attachment:fixed; color:var(--text); font:16px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; min-height:100dvh; overflow-x:hidden; }
+body{ margin:0; background:transparent; color:var(--text); font:16px/1.45 ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial; min-height:100dvh; overflow-x:hidden; }
 .container{ max-width:1000px; margin:0 auto; padding:28px; }
 
 /* Cards / bars */
-.bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; backdrop-filter: blur(8px); background: color-mix(in oklab, var(--surface) 80%, transparent); padding:12px 16px; margin:16px; border-radius:18px; box-shadow:var(--shadow); }
+.bar{ display:flex; align-items:center; justify-content:space-between; gap:12px; backdrop-filter: blur(20px); background: rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.3); padding:12px 16px; margin:16px; border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,.15); }
+html[data-theme="dark"] .bar{ background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
 .brand{ display:flex; align-items:center; gap:12px; font-weight:700; }
 .brand .dot{ width:12px; height:12px; border-radius:99px; background: linear-gradient(135deg,var(--accent1),var(--accent2)); box-shadow:0 0 18px var(--accent1); }
-.card{ backdrop-filter: blur(10px); background: color-mix(in oklab, var(--surface) 92%, transparent); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); border-radius:18px; box-shadow: var(--shadow); padding:18px; }
+.card{ backdrop-filter: blur(20px); background: rgba(255,255,255,0.4); border:1px solid rgba(255,255,255,0.3); border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,.15); padding:18px; }
+html[data-theme="dark"] .card{ background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
 .grid{ display:grid; grid-template-columns:1.1fr .9fr; gap:20px; }
 @media (max-width: 900px){ .grid{ grid-template-columns:1fr; } }
 
@@ -42,9 +44,10 @@ body{ margin:0; background:var(--bg); background-attachment:fixed; color:var(--t
 label{ display:block; font-weight:600; margin:10px 0 6px; }
 input,textarea,select{ width:100%; border-radius:12px; border:1px solid color-mix(in oklab, var(--muted) 50%, transparent); background: color-mix(in oklab, var(--surface) 90%, transparent); color:var(--text); padding:10px 12px; }
 input[type=range]{ height:30px; }
-button{ appearance:none; border:0; cursor:pointer; background:linear-gradient(135deg,var(--accent1),var(--accent2)); color:#0b0d13; padding:10px 14px; border-radius:12px; font-weight:700; box-shadow:0 6px 18px color-mix(in oklab, var(--accent2) 30%, transparent); transition:transform .22s ease, box-shadow .22s ease, opacity .22s ease; }
-button:hover{ transform:translateY(-1px); } button:active{ transform:translateY(0); opacity:.9; }
-.ghost{ background: color-mix(in oklab, var(--muted) 35%, transparent); color:var(--text); }
+button{ appearance:none; cursor:pointer; border:1px solid rgba(255,255,255,0.25); background:linear-gradient(135deg,var(--accent1),var(--accent2)); color:var(--text); padding:10px 14px; border-radius:14px; font-weight:700; backdrop-filter: blur(12px); box-shadow:0 4px 12px rgba(0,0,0,.15); transition:transform .22s ease, opacity .22s ease; }
+button:hover{ transform:translateY(-1px); }
+button:active{ transform:translateY(0); opacity:.9; }
+.ghost{ background: color-mix(in oklab, var(--muted) 35%, transparent); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); color:var(--text); }
 
 /* Lists */
 .list{ display:grid; gap:12px; }
@@ -219,3 +222,30 @@ textarea{ resize:vertical; max-width:100%; }
 
 /* Validation */
 .error{ color:#ff6b6b; font-size:12px; margin-top:4px; }
+
+/* Aurora background elements */
+.aurora{ position:fixed; inset:0; overflow:hidden; z-index:-10; background:linear-gradient(135deg,var(--bg-start),var(--bg-mid),var(--bg-end)); }
+html[data-theme='light'] .aurora{ --bg-start:#f7e8ff; --bg-mid:#dff3ff; --bg-end:#ffe8f2; }
+html[data-theme='dark'] .aurora{ --bg-start:#0a0014; --bg-mid:#0b1026; --bg-end:#11001f; }
+.aurora-sweep{ position:absolute; inset:0; filter:blur(80px); opacity:.7; animation:hue 20s linear infinite; background:
+  radial-gradient(1200px 600px at -10% 110%, rgba(244,114,182,.35) 0%, rgba(244,114,182,0) 55%),
+  radial-gradient(900px 500px at 120% -10%, rgba(59,130,246,.30) 0%, rgba(59,130,246,0) 60%),
+  radial-gradient(700px 500px at 30% 10%, rgba(168,85,247,.28) 0%, rgba(168,85,247,0) 60%),
+  radial-gradient(900px 600px at 70% 90%, rgba(250,204,21,.25) 0%, rgba(250,204,21,0) 60%);
+}
+.aurora-blob{ position:absolute; border-radius:50%; filter:blur(80px); opacity:.6; mix-blend-mode:screen; }
+.aurora-blob.iris{ width:52rem; height:52rem; left:-40rem; top:4rem; background:
+  radial-gradient(60% 60% at 50% 50%, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 60%),
+  conic-gradient(from 180deg, rgba(236,72,153,.45), rgba(139,92,246,.45), rgba(59,130,246,.45), rgba(99,102,241,.45), rgba(236,72,153,.45)); }
+.aurora-blob.grad{ width:46rem; height:46rem; right:-24rem; bottom:-24rem; background:linear-gradient(to top right, rgba(244,114,182,.5), rgba(139,92,246,.4), rgba(59,130,246,.5)); }
+.aurora-blob.light{ width:28rem; height:28rem; left:25%; top:-5rem; background:linear-gradient(to bottom, rgba(255,255,255,.7), rgba(237,176,255,.5), transparent); }
+.aurora-stars{ position:absolute; inset:0; background-image:radial-gradient(white 0.7px, transparent 0.8px); background-size:24px 24px; opacity:.25; pointer-events:none; }
+html[data-theme='dark'] .aurora-stars{ opacity:.3; }
+.aurora-noise{ position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,0.10)1px, transparent 1px), radial-gradient(rgba(0,0,0,0.06)1px, transparent 1px); background-size:3px 3px,4px 4px; background-position:0 0,1px 1px; mix-blend-mode:overlay; opacity:.45; pointer-events:none; }
+.animate-drift{ animation:drift 18s ease-in-out infinite; }
+.animate-drift-slow{ animation:drift 28s ease-in-out infinite; }
+.animate-float{ animation:float 14s ease-in-out infinite; }
+.animate-hue{ animation:hue 20s linear infinite; }
+@keyframes drift{ 0%{transform:translate3d(0,0,0) rotate(0) scale(1);} 50%{transform:translate3d(6%,-4%,0) rotate(20deg) scale(1.08);} 100%{transform:translate3d(0,0,0) rotate(0) scale(1);} }
+@keyframes float{ 0%{transform:translateY(0);} 50%{transform:translateY(-24px);} 100%{transform:translateY(0);} }
+@keyframes hue{ 0%{filter:hue-rotate(0deg);} 50%{filter:hue-rotate(25deg);} 100%{filter:hue-rotate(0deg);} }
