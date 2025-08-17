@@ -5,7 +5,12 @@ type Props = {
 };
 
 export default function GlowBackground({ theme }: Props){
-  // Decorative dynamic background with drifting blobs and star field
+  if(theme === 'light'){
+    // Pastel prism background for light mode with shifting hues
+    return <div className="prism-bg animate-hueShift" aria-hidden />;
+  }
+
+  // Original aurora background kept for dark mode
   return (
     <div className="aurora" aria-hidden>
       <div className="aurora-sweep animate-hue" />
