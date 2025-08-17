@@ -5,15 +5,7 @@ type Props = {
 };
 
 export default function GlowBackground({ theme }: Props){
-  // Decorative dynamic background with drifting blobs and star field
-  return (
-    <div className="aurora" aria-hidden>
-      <div className="aurora-sweep animate-hue" />
-      <div className="aurora-blob iris animate-drift" />
-      <div className="aurora-blob grad animate-drift-slow" />
-      <div className="aurora-blob light animate-float" />
-      <div className="aurora-stars" />
-      <div className="aurora-noise" />
-    </div>
-  );
+  // Pastel gradient with subtle hue rotation shown only in light mode
+  if(theme !== 'light') return null;
+  return <div className="morning-glow" aria-hidden />;
 }

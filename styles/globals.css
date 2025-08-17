@@ -7,6 +7,19 @@
   --accent2-dark:#00e5ff;
 }
 html{ color-scheme:light dark; }
+
+@keyframes hueShift{
+  from{ filter:hue-rotate(0deg); }
+  to{ filter:hue-rotate(360deg); }
+}
+
+.morning-glow{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  background:linear-gradient(to bottom right,#fce7f3,#dbeafe,#e9d5ff);
+  animation:hueShift 10s linear infinite;
+}
 html[data-theme="light"]{
   --bg:linear-gradient(135deg,#ffe6fa,#e6f7ff);
   --surface:rgba(255,255,255,0.6);
@@ -48,6 +61,24 @@ button{ appearance:none; cursor:pointer; border:1px solid rgba(255,255,255,0.25)
 button:hover{ transform:translateY(-1px); }
 button:active{ transform:translateY(0); opacity:.9; }
 .ghost{ background: color-mix(in oklab, var(--muted) 35%, transparent); border:1px solid color-mix(in oklab, var(--muted) 55%, transparent); color:var(--text); }
+
+html[data-theme="light"] .bar,
+html[data-theme="light"] .card{
+  backdrop-filter: blur(40px);
+  background:rgba(255,255,255,0.2);
+  border:1px solid rgba(255,255,255,0.3);
+  box-shadow:0 20px 40px rgba(0,0,0,.1);
+}
+
+html[data-theme="light"] button{
+  background:linear-gradient(135deg,#fbcfe8,#dbeafe,#ddd6fe);
+  color:#fff;
+  border:1px solid rgba(255,255,255,0.4);
+}
+
+html[data-theme="light"] button:hover{
+  filter:brightness(1.1);
+}
 
 /* Lists */
 .list{ display:grid; gap:12px; }
